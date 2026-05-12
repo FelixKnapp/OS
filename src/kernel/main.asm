@@ -61,7 +61,7 @@ main:
 
 
 msg_os_name: db 'KnappOS', ENDL, 0
-msg_os_vers: db 'Version 0.01', ENDL, 0
+msg_os_vers: db 'Version 0.02', ENDL, 0
 
 
 times 510-($-$$) db 0
