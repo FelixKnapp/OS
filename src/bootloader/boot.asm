@@ -89,6 +89,9 @@ main:
 .halt:
     jmp .halt
 
+;
+; Converts an LBA adress to a CHS
+;
 
 
 msg_os_name: db 'KnappOS', ENDL, 0
