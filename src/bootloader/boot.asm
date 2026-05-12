@@ -79,23 +79,149 @@ main:
     mov ss, ax
     mov sp, 0x7C00      ; stack grows downwards from where we are loaded in memory
 
-    ; print hello world message
+	; read sth from floppy
+	mov [ebr_drive_number], dl
+
+	mov ax, 1
+	mov cl, 1
+	mov bx, 0x7E00
+	call read_disk_sectors
+
+    ; print OS name and version
     mov si, msg_os_name
     call puts
     mov si, msg_os_vers
     call puts
     hlt
 
+;
+; Errors
+;
+
+floppy_error:
+	mov si, msg_read_failed
+	call puts
+	jmp wait_key_reboot
+
+wait_key_reboot:
+	mov ah, 0
+	int 16h				; wait for keypress
+	jmp 0FFFFh:0		; jmp to Bios beginning
+
 .halt:
-    jmp .halt
+	cli					; disable interrupts, keep CPU in halt state 
+    hlt
 
 ;
-; Converts an LBA adress to a CHS
+; Disk routines
 ;
 
+;
+; Converts an LBA adress to a CHS adress
+; Parameters: 
+; 	-ax: LBA adress
+; Returns:
+; 	-cx [bits 0-5]: sector number
+; 	-cx [bits 6-15]: cylinder
+; 	-dh: head 
+; 
+lba_to_chs:
+
+	push ax
+	push dx
+
+	xor dx, dx							; dx = 0
+	div word [bdb_sectors_per_track]	; ax = LBA / SectorsPerTrack
+										; ax = LBA % SectorsPerTrack
+	inc dx								; dx = (LBA % SectorsPerTrack)
+	mov cx, dx							; cx = sector
+
+	xor dx, dx							; dx = 0
+	div word [bdb_heads]				; ax = (LBA / SectorsPerTrack) / Heads = cylinder
+										; dx = (LBA / SectorsPerTrack) % Heads = head
+	mov dh, dl							; dl = head
+	mov ch, al							; ch = cylinder (lower 8 bits)
+	shl ah, 6
+	or cl, ah							; put upper 2 bits of cylinder in CL
+
+	pop ax
+	mov dl, al							; restore DL
+	pop ax
+	
+	ret
+
+;
+; Reads sectors from disk
+; Parameters: 
+; 	-ax: LBA adress
+;	-cl: number of sectors to read(max 128)
+;	-dl: drive number
+;	-es:bx: store read number
+; 
+read_disk_sectors:
+
+	push ax								; safe to be modified registers
+	push bx
+	push cx
+	push dx
+	push di
+
+	
+	push cx								; save cl temporarily
+	call lba_to_chs
+	pop ax								; AL = numbers to read
+	
+	mov ah, 02h
+	mov di, 3							; retry count
+
+.retry:
+	pusha
+	stc									; set carry flag
+	int 13h
+	jnc .done							; jump if carry isnt set
+
+	; read failed
+	popa
+	call disk_reset
+
+	dec di
+	test di, di
+	jnz .retry
+
+.fail:
+	; all attempts exhausted
+	jmp floppy_error
+
+.done:
+	popa
+
+	push di								; restore modified registers
+	push dx
+	push cx
+	push bx
+	push ax
+
+	ret
+
+;
+; Resets disk controller
+; Parameters
+; 	dl: drive number
+;
+disk_reset:
+
+	pusha
+	mov ah, 0
+	int 13h
+	jc floppy_error
+	popa
+
+	ret
 
 msg_os_name: db 'KnappOS', ENDL, 0
-msg_os_vers: db 'Version 0.01', ENDL, 0
+msg_os_vers: db 'Version 0.012', ENDL, 0
+
+msg_read_failed: db 'Reading from Disk has failed!'
 
 
 times 510-($-$$) db 0
