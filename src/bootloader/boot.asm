@@ -92,6 +92,8 @@ main:
     call puts
     mov si, msg_os_vers
     call puts
+
+	cli
     hlt
 
 ;
@@ -195,11 +197,11 @@ read_disk_sectors:
 .done:
 	popa
 
-	push di								; restore modified registers
-	push dx
-	push cx
-	push bx
-	push ax
+	pop di								; restore modified registers
+	pop dx
+	pop cx
+	pop bx
+	pop ax
 
 	ret
 
@@ -222,7 +224,6 @@ msg_os_name: db 'KnappOS', ENDL, 0
 msg_os_vers: db 'Version 0.012', ENDL, 0
 
 msg_read_failed: db 'Reading from Disk has failed!'
-
 
 times 510-($-$$) db 0
 dw 0AA55h
