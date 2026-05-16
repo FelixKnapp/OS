@@ -1,3 +1,4 @@
 # OS
 Operating System Knapp OS
- - Includes an unfinished bootloader and no kernel
+ - Finished bootloader
+ - No actual Kernel
