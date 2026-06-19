@@ -5,7 +5,7 @@
 #include <stdlib.h>
 #include <ctype.h>
 
-typedef struct 
+typedef struct
 {
     uint8_t BootJumpInstruction[3];
     uint8_t OemIdentifier[8];
@@ -29,12 +29,10 @@ typedef struct
     uint32_t VolumeId;          // serial number, value doesn't matter
     uint8_t VolumeLabel[11];    // 11 bytes, padded with spaces
     uint8_t SystemId[8];
-
-    // ... we don't care about code ...
-
 } __attribute__((packed)) BootSector;
 
-typedef struct 
+
+typedef struct
 {
     uint8_t Name[11];
     uint8_t Attributes;
@@ -55,7 +53,6 @@ BootSector g_BootSector;
 uint8_t* g_Fat = NULL;
 DirectoryEntry* g_RootDirectory = NULL;
 uint32_t g_RootDirectoryEnd;
-
 
 bool readBootSector(FILE* disk)
 {
