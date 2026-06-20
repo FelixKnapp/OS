@@ -15,6 +15,7 @@ _x86_Video_WriteCharTeletype:
     ; [bp + 4] - first argument (character)
     ; [bp + 6] - second argument (page)
     ; note: bytes are converted to words
+    mov ah, 0Eh
     mov al, [bp + 4]
     mov bh, [bp + 6]
 
