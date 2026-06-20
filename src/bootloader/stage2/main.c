@@ -1,5 +1,7 @@
 #include "stdint.h"
+#include "stdio.h"
 
-void _cdecl cstart_(uint16_t bootdrive){
-
+void _cdecl cstart_(void)
+{
+    puts("Hello from the other side\r\n");
 }
