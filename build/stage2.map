@@ -1,7 +1,7 @@
 Open Watcom Linker Version 2.0 beta Jun 19 2026 05:48:12 (32-bit)
 Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 Portions Copyright (c) 1985-2002 Sybase, Inc. All Rights Reserved.
-Created on:       26/06/21 20:59:56
+Created on:       26/06/22 08:40:00
 Executable Image: /home/felixk/OS/build/stage2.bin
 creating a RAW Binary Image executable
 
@@ -13,7 +13,7 @@ creating a RAW Binary Image executable
 Group                           Address              Size
 =====                           =======              ====
 
-DGROUP                          00000738             00000168
+DGROUP                          00000738             0000016c
 
 
 
@@ -25,10 +25,10 @@ Segment                Class          Group          Address         Size
 =======                =====          =====          =======         ====
 
 _ENTRY                 CODE           AUTO           00000000        00000013
-_TEXT                  CODE           AUTO           00000013        00000725
-CONST                  DATA           DGROUP         00000738        00000145
-CONST2                 DATA           DGROUP         0000087e        00000022
-_DATA                  DATA           DGROUP         000008a0        00000000
+_TEXT                  CODE           AUTO           00000013        00000724
+CONST                  DATA           DGROUP         00000738        00000149
+CONST2                 DATA           DGROUP         00000882        00000022
+_DATA                  DATA           DGROUP         000008a4        00000000
 
 
                         +----------------+
@@ -49,13 +49,13 @@ Module: /home/felixk/OS/build/stage2/asm/x86.obj(/home/felixk/OS/build/stage2/as
 Module: /home/felixk/OS/build/stage2/c/main.obj(/home/felixk/OS/build/stage2/c/main.obj)
 00000054       _cstart_
 Module: /home/felixk/OS/build/stage2/c/stdio.obj(/home/felixk/OS/build/stage2/c/stdio.obj)
-00000104+      putc_
-0000012b       puts_
-00000162+      puts_f_
-0000019f       _printf
-0000049c+      printf_number_
-0000087e+      _g_hexchars_small
-0000088f+      _g_hexchars_large
+00000103+      putc_
+0000012a       puts_
+00000161+      puts_f_
+0000019e       _printf
+0000049b+      printf_number_
+00000882+      _g_hexchars_small
+00000893+      _g_hexchars_large
 
 
                         +---------------------+
@@ -73,15 +73,15 @@ Module          Segment               Class           Address         Size
 /home/felixk/OS/build/stage2/asm/x86.obj
                 _TEXT                 CODE           00000013         00000041
 /home/felixk/OS/build/stage2/c/main.obj
-                _TEXT                 CODE           00000054         000000b0
-                CONST                 DATA           00000738         00000145
-                CONST2                DATA           0000087e         00000000
-                _DATA                 DATA           000008a0         00000000
+                _TEXT                 CODE           00000054         000000af
+                CONST                 DATA           00000738         00000149
+                CONST2                DATA           00000882         00000000
+                _DATA                 DATA           000008a4         00000000
 /home/felixk/OS/build/stage2/c/stdio.obj
-                _TEXT                 CODE           00000104         00000634
-                CONST                 DATA           0000087e         00000000
-                CONST2                DATA           0000087e         00000022
-                _DATA                 DATA           000008a0         00000000
+                _TEXT                 CODE           00000103         00000634
+                CONST                 DATA           00000882         00000000
+                CONST2                DATA           00000882         00000022
+                _DATA                 DATA           000008a4         00000000
 Warning! W1014: stack segment not found
 
 
@@ -90,6 +90,6 @@ Warning! W1014: stack segment not found
                         +-----------------------+
 
 Stack size:  0200 (512.)
-Memory size:  08a0 (2208.)
+Memory size:  08a4 (2212.)
 Entry point address: 00000000
 Link time: 00:00.00
