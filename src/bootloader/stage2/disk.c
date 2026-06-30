@@ -1,7 +1,8 @@
 #include "disk.h"
 #include "x86.h"
 
-bool DiskInit(disk_t* disk, , uint8_t drive_number)
+// initialize disk
+bool DiskInit(disk_t* disk, uint8_t drive_number)
 {
     uint8_t drive_type;
     uint16_t cylinders, sectors, heads;
@@ -17,6 +18,7 @@ bool DiskInit(disk_t* disk, , uint8_t drive_number)
     return true;
 }
 
+// convert lba value to cylinder, head and sector
 void DiskLBAtoCHS(disk_t* disk, uint32_t lba, uint16_t* cylinder_out, uint16_t* sector_out, uint16_t* head_out)
 {
     // sector = lba % sectors per track + 1
@@ -29,11 +31,18 @@ void DiskLBAtoCHS(disk_t* disk, uint32_t lba, uint16_t* cylinder_out, uint16_t* 
     *head_out = (lba / disk->sectors) % disk->heads;
 }
 
+// read sectors from disk
 bool DiskReadSectors(disk_t* disk, uint16_t sectors, uint32_t lba, uint8_t far* data_out)
 {
     uint16_t cylinder, sector, head;
 
     DiskLBAtoCHS(disk, lba, &cylinder, &sector, &head);
 
-    
+    for (int i = 0; i < 3; i++) 
+    {
+        if(x86_Disk_Read(disk->id, cylinder, sector, head, sectors, data_out)) return true;
+        x86_Disk_Reset(disk->id);
+    }
+
+    return false;
 }

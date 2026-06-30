@@ -7,45 +7,44 @@
 
 typedef struct
 {
-    uint8_t BootJumpInstruction[3];
-    uint8_t OemIdentifier[8];
-    uint16_t BytesPerSector;
-    uint8_t SectorsPerCluster;
-    uint16_t ReservedSectors;
-    uint8_t FatCount;
-    uint16_t DirEntryCount;
-    uint16_t TotalSectors;
-    uint8_t MediaDescriptorType;
-    uint16_t SectorsPerFat;
-    uint16_t SectorsPerTrack;
-    uint16_t Heads;
-    uint32_t HiddenSectors;
-    uint32_t LargeSectorCount;
+    uint8_t boot_jump_instruction[3];
+    uint8_t oem_identifier[8];
+    uint16_t bytes_per_sector;
+    uint8_t sectors_per_cluster;
+    uint16_t reserved_sectors;
+    uint8_t fat_count;
+    uint16_t dir_entry_count;
+    uint16_t total_sectors;
+    uint8_t media_descriptor_type;
+    uint16_t sectors_per_fat;
+    uint16_t sectors_per_track;
+    uint16_t heads;
+    uint32_t hidden_sectors;
+    uint32_t large_sector_count;
 
-    // extended boot record
-    uint8_t DriveNumber;
+    uint8_t drive_number;
     uint8_t _Reserved;
-    uint8_t Signature;
-    uint32_t VolumeId;          // serial number, value doesn't matter
-    uint8_t VolumeLabel[11];    // 11 bytes, padded with spaces
-    uint8_t SystemId[8];
+    uint8_t signature;
+    uint32_t volume_id;          // serial number, value doesn't matter
+    uint8_t volume_label[11];    // 11 bytes, padded with spaces
+    uint8_t system_id[8];
 } __attribute__((packed)) BootSector;
 
 
 typedef struct
 {
-    uint8_t Name[11];
-    uint8_t Attributes;
+    uint8_t name[11];
+    uint8_t attributes;
     uint8_t _Reserved;
-    uint8_t CreatedTimeTenths;
-    uint16_t CreatedTime;
-    uint16_t CreatedDate;
-    uint16_t AccessedDate;
-    uint16_t FirstClusterHigh;
-    uint16_t ModifiedTime;
-    uint16_t ModifiedDate;
-    uint16_t FirstClusterLow;
-    uint32_t Size;
+    uint8_t created_time_tenths;
+    uint16_t created_time;
+    uint16_t created_date;
+    uint16_t accessed_date;
+    uint16_t first_cluster_high;
+    uint16_t modified_time;
+    uint16_t modified_date;
+    uint16_t first_cluster_low;
+    uint32_t size;
 } __attribute__((packed)) DirectoryEntry;
 
 
@@ -62,33 +61,33 @@ bool readBootSector(FILE* disk)
 bool readSectors(FILE* disk, uint32_t lba, uint32_t count, void* bufferOut)
 {
     bool ok = true;
-    ok = ok && (fseek(disk, lba * g_BootSector.BytesPerSector, SEEK_SET) == 0);
-    ok = ok && (fread(bufferOut, g_BootSector.BytesPerSector, count, disk) == count);
+    ok = ok && (fseek(disk, lba * g_BootSector.bytes_per_sector, SEEK_SET) == 0);
+    ok = ok && (fread(bufferOut, g_BootSector.bytes_per_sector, count, disk) == count);
     return ok;
 }
 
 bool readFat(FILE* disk)
 {
-    g_Fat = (uint8_t*) malloc(g_BootSector.SectorsPerFat * g_BootSector.BytesPerSector);
-    return readSectors(disk, g_BootSector.ReservedSectors, g_BootSector.SectorsPerFat, g_Fat);
+    g_Fat = (uint8_t*) malloc(g_BootSector.sectors_per_fat * g_BootSector.bytes_per_sector);
+    return readSectors(disk, g_BootSector.reserved_sectors, g_BootSector.sectors_per_fat, g_Fat);
 }
 
 bool readRootDirectory(FILE* disk)
 {
-    uint32_t lba = g_BootSector.ReservedSectors + g_BootSector.SectorsPerFat * g_BootSector.FatCount;
-    uint32_t size = sizeof(DirectoryEntry) * g_BootSector.DirEntryCount;
-    uint32_t sectors = (size / g_BootSector.BytesPerSector);
-    if (size % g_BootSector.BytesPerSector > 0)
+    uint32_t lba = g_BootSector.reserved_sectors + g_BootSector.sectors_per_fat * g_BootSector.fat_count;
+    uint32_t size = sizeof(DirectoryEntry) * g_BootSector.dir_entry_count;
+    uint32_t sectors = (size / g_BootSector.bytes_per_sector);
+    if (size % g_BootSector.bytes_per_sector > 0)
         sectors++;
 
     g_RootDirectoryEnd = lba + sectors;
-    g_RootDirectory = (DirectoryEntry*) malloc(sectors * g_BootSector.BytesPerSector);
+    g_RootDirectory = (DirectoryEntry*) malloc(sectors * g_BootSector.bytes_per_sector);
     return readSectors(disk, lba, sectors, g_RootDirectory);
 }
 
 DirectoryEntry* findFile(const char* name)
 {
-    for (uint32_t i = 0; i < g_BootSector.DirEntryCount; i++)
+    for (uint32_t i = 0; i < g_BootSector.dir_entry_count; i++)
     {
         if (memcmp(name, g_RootDirectory[i].Name, 11) == 0)
             return &g_RootDirectory[i];
@@ -100,12 +99,12 @@ DirectoryEntry* findFile(const char* name)
 bool readFile(DirectoryEntry* fileEntry, FILE* disk, uint8_t* outputBuffer)
 {
     bool ok = true;
-    uint16_t currentCluster = fileEntry->FirstClusterLow;
+    uint16_t currentCluster = fileEntry->first_cluster_low;
 
     do {
-        uint32_t lba = g_RootDirectoryEnd + (currentCluster - 2) * g_BootSector.SectorsPerCluster;
-        ok = ok && readSectors(disk, lba, g_BootSector.SectorsPerCluster, outputBuffer);
-        outputBuffer += g_BootSector.SectorsPerCluster * g_BootSector.BytesPerSector;
+        uint32_t lba = g_RootDirectoryEnd + (currentCluster - 2) * g_BootSector.sectors_per_cluster;
+        ok = ok && readSectors(disk, lba, g_BootSector.sectors_per_cluster, outputBuffer);
+        outputBuffer += g_BootSector.sectors_per_cluster * g_BootSector.bytes_per_sector;
 
         uint32_t fatIndex = currentCluster * 3 / 2;
         if (currentCluster % 2 == 0)
@@ -157,7 +156,7 @@ int main(int argc, char** argv)
         return -5;
     }
 
-    uint8_t* buffer = (uint8_t*) malloc(fileEntry->Size + g_BootSector.BytesPerSector);
+    uint8_t* buffer = (uint8_t*) malloc(fileEntry->Size + g_BootSector.bytes_per_sector);
     if (!readFile(fileEntry, disk, buffer)) {
         fprintf(stderr, "Could not read file %s!\n", argv[2]);
         free(g_Fat);
