@@ -1,30 +1,5 @@
-fat.h(48): Error! E1009: Expecting ',' but found '*'
-fat.h(48): Error! E1116: An id list not allowed except for function definition
-fat.h(50): Error! E1009: Expecting ',' but found '*'
-fat.h(50): Error! E1116: An id list not allowed except for function definition
-fat.h(52): Error! E1009: Expecting ',' but found '*'
-fat.h(52): Error! E1116: An id list not allowed except for function definition
-fat.h(54): Error! E1009: Expecting ',' but found '*'
-fat.h(54): Error! E1116: An id list not allowed except for function definition
-fat.c(5): Error! E1055: Unable to open 'ctype.h'
-fat.c(51): Error! E1011: Symbol 'NULL' has not been declared
-fat.c(51): Warning! W102: Type mismatch (warning)
-fat.c(51): Note! I2003: source conversion type is 'int'
-fat.c(51): Note! I2004: target conversion type is 'unsigned char *'
-fat.c(51): Error! E1054: Expression must be constant
-fat.c(52): Error! E1022: Missing or misspelled data type near 'DirectoryEntry'
-fat.c(52): Warning! W132: No storage class or type specified
-fat.c(52): Warning! W305: Type 'int' assumed in declaration of 'g_RootDirectory'
-fat.c(52): Warning! W102: Type mismatch (warning)
-fat.c(52): Note! I2003: source conversion type is 'int'
-fat.c(52): Note! I2004: target conversion type is 'int *'
-fat.c(52): Error! E1054: Expression must be constant
-fat.c(55): Error! E1009: Expecting ',' but found '*'
-fat.c(57): Warning! W131: No prototype found for function 'DISK_ReadSectors'
-fat.c(57): Error! E1011: Symbol 'disk' has not been declared
-fat.c(57): Error! E1031: Name 'BootSectorBytes' not found in struct/union 
-fat.c(55): Warning! W303: Parameter 'DISK' has been defined, but not referenced
-fat.c(60): Error! E1009: Expecting ',' but found '*'
-fat.c(60): Error! E1116: An id list not allowed except for function definition
-fat.c(57): Warning! W308: The function 'DISK_ReadSectors' without prototyped parameters called
-fat.c(57): Note! I2002: 'DISK_ReadSectors' defined in: fat.c(57)
+fat.c(191): Warning! W202: Symbol 'current' has been defined, but not referenced
+fat.c(183): Warning! W303: Parameter 'disk' has been defined, but not referenced
+fat.c(185): Warning! W202: Symbol 'buffer' has been defined, but not referenced
+fat.c(190): Warning! W202: Symbol 'parent' has been defined, but not referenced
+fat.c(201): Warning! W107: Missing return value for function 'Fat_Open'

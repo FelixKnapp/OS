@@ -45,12 +45,12 @@ enum FAT_Attributes
 
 
 // Initialize FAT system
-bool FAT_Init(DISK* disk);
+bool FAT_Init(disk_t* disk);
 // Open FAT path 
-FAT_File FAT_Open(DISK* disk, const char* path);
+FAT_File far* FAT_Open(disk_t* disk, const char* path);
 // Read from FAT File
-uint32_t FAT_Read(DISK* disk, FAT_File far* file, uint32_t byte_count, void* data_out);
+uint32_t FAT_Read(disk_t* disk, FAT_File far* file, uint32_t byte_count, void* data_out);
 // Read from FAT Directory Entry
-bool FAT_ReadEntry(DISK* disk, FAT_File far* file, FAT_DirectoryEntry* dir_entry);
+bool FAT_ReadEntry(disk_t* disk, FAT_File far* file, FAT_DirectoryEntry* dir_entry);
 // Close FAT File
 void FAT_Close(FAT_File far* file);

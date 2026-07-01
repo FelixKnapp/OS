@@ -89,22 +89,22 @@ DirectoryEntry* findFile(const char* name)
 {
     for (uint32_t i = 0; i < g_BootSector.dir_entry_count; i++)
     {
-        if (memcmp(name, g_RootDirectory[i].Name, 11) == 0)
+        if (memcmp(name, g_RootDirectory[i].name, 11) == 0)
             return &g_RootDirectory[i];
     }
 
     return NULL;
 }
 
-bool readFile(DirectoryEntry* fileEntry, FILE* disk, uint8_t* outputBuffer)
+bool readFile(DirectoryEntry* fileEntry, FILE* disk, uint8_t* output_buffer)
 {
     bool ok = true;
     uint16_t currentCluster = fileEntry->first_cluster_low;
 
     do {
         uint32_t lba = g_RootDirectoryEnd + (currentCluster - 2) * g_BootSector.sectors_per_cluster;
-        ok = ok && readSectors(disk, lba, g_BootSector.sectors_per_cluster, outputBuffer);
-        outputBuffer += g_BootSector.sectors_per_cluster * g_BootSector.bytes_per_sector;
+        ok = ok && readSectors(disk, lba, g_BootSector.sectors_per_cluster, output_buffer);
+        output_buffer += g_BootSector.sectors_per_cluster * g_BootSector.bytes_per_sector;
 
         uint32_t fatIndex = currentCluster * 3 / 2;
         if (currentCluster % 2 == 0)
@@ -156,7 +156,7 @@ int main(int argc, char** argv)
         return -5;
     }
 
-    uint8_t* buffer = (uint8_t*) malloc(fileEntry->Size + g_BootSector.bytes_per_sector);
+    uint8_t* buffer = (uint8_t*) malloc(fileEntry->size + g_BootSector.bytes_per_sector);
     if (!readFile(fileEntry, disk, buffer)) {
         fprintf(stderr, "Could not read file %s!\n", argv[2]);
         free(g_Fat);
@@ -165,7 +165,7 @@ int main(int argc, char** argv)
         return -5;
     }
 
-    for (size_t i = 0; i < fileEntry->Size; i++)
+    for (size_t i = 0; i < fileEntry->size; i++)
     {
         if (isprint(buffer[i])) fputc(buffer[i], stdout);
         else printf("<%02x>", buffer[i]);
